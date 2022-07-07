@@ -1,17 +1,33 @@
 import { createTheme } from '@mui/material/styles';
-import { red } from '@mui/material/colors';
+import {
+  amber,
+  blueGrey,
+  green,
+  lightBlue,
+  red,
+  indigo,
+} from '@mui/material/colors';
 
 // Create a theme instance.
 const light = createTheme({
   palette: {
     primary: {
-      main: '#556cd6',
+      main: indigo.A400,
     },
     secondary: {
-      main: '#19857b',
+      main: blueGrey.A400,
     },
     error: {
       main: red.A400,
+    },
+    warning: {
+      main: amber.A400,
+    },
+    info: {
+      main: lightBlue.A400,
+    },
+    success: {
+      main: green.A400,
     },
   },
 });

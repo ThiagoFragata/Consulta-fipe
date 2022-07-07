@@ -1,29 +1,130 @@
-import { Box, Button, FormControl, Stack, Typography } from '@mui/material';
-import router from 'next/router';
+import {
+  Box,
+  Button,
+  InputLabel,
+  MenuItem,
+  Select,
+  SelectChangeEvent,
+} from '@mui/material';
 
-import React from 'react';
-import { Controller, useForm } from 'react-hook-form';
-import Select from 'react-select';
+import React, { useEffect, useState } from 'react';
+import { api } from '~/services/api';
 
-type IFormInput = {
-  models: { label: string; value: string };
-  carBrand: { label: string; value: string };
-  age: { label: string; value: string };
-};
+interface BrandsProps {
+  codigo: string;
+  nome: string;
+}
+
+interface DataFipeProps {
+  AnoModelo: number;
+  CodigoFipe: string;
+  Combustivel: string;
+  Marca: string;
+  MesReferencia: string;
+  Modelo: string;
+  SiglaCombustivel: string;
+  TipoVeiculo: 1;
+  Valor: string;
+}
 
 export function Search() {
-  const { control, handleSubmit } = useForm<IFormInput>();
+  const [brands, setBrands] = useState<BrandsProps[]>();
+  const [models, setModels] = useState<BrandsProps[]>();
+  const [ages, setAges] = useState<BrandsProps[]>();
 
-  const onSubmit = (data: IFormInput) => {
-    console.log(data);
+  const [dataFipe, setDataFipe] = useState<DataFipeProps>();
 
-    if (data.carBrand === null) {
-      alert('Selecione pelo menos uma marca!');
-      return;
+  const [loading, setLoading] = useState(true);
+
+  const [lockModel, setLockModel] = useState(true);
+  const [lockAge, setLockAge] = useState(true);
+  const [lockButton, setButton] = useState(true);
+
+  const [brand, setBrand] = useState('');
+  const [model, setModel] = useState('');
+  const [age, setAge] = useState('');
+
+  // listar marcas
+  useEffect(() => {
+    api
+      .get('/marcas')
+      .then((response) => {
+        setBrands(response.data);
+      })
+      .catch((error) => {
+        alert(error.message);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }, []);
+
+  // listar modelos
+  async function handleChangeBrand(event: SelectChangeEvent) {
+    event.preventDefault();
+
+    setBrand(event.target.value as string);
+    setLoading(true);
+
+    try {
+      const response = await api.get(`/marcas/${event.target.value}/modelos`);
+      setModels(response.data.modelos);
+
+      console.log('modelos', models);
+
+      setLockModel(false);
+    } catch (error) {
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  // listar anos com base no modelo
+  async function handleChangeModels(event: SelectChangeEvent) {
+    event.preventDefault();
+
+    setModel(event.target.value as string);
+    setLoading(true);
+
+    try {
+      const response = await api.get(
+        `/marcas/${brand}/modelos/${event.target.value}/anos`
+      );
+      setAges(response.data);
+
+      console.log('anos', ages);
+
+      setLockAge(false);
+    } catch (error) {
+      alert(error);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  // consultar fipe
+  async function handleChangeConsult(event: SelectChangeEvent) {
+    event.preventDefault();
+
+    setAge(event.target.value as string);
+    setLoading(true);
+
+    try {
+      const response = await api.get(
+        `/marcas/${brand}/modelos/${model}/anos/${event.target.value}`
+      );
+
+      setDataFipe(response.data);
+
+      setButton(false);
+    } catch (error) {
+      alert(error);
+    } finally {
+      setLoading(false);
     }
 
-    router.push('/result');
-  };
+    console.log(dataFipe);
+  }
 
   return (
     <Box
@@ -36,108 +137,75 @@ export function Search() {
         minWidth: 300,
       }}
     >
-      <FormControl component="form" fullWidth onSubmit={handleSubmit(onSubmit)}>
-        <Stack spacing={3}>
-          <section>
-            <Typography
-              noWrap
-              component="label"
-              sx={{
-                flexGrow: 1,
-                fontFamily: 'roboto',
-                fontWeight: 500,
-                color: 'inherit',
-              }}
-            >
-              Marca
-            </Typography>
-            <Controller
-              render={({ field }) => (
-                <Select
-                  {...field}
-                  options={[
-                    { value: 'chocolate', label: 'Chocolate' },
-                    { value: 'strawberry', label: 'Strawberry' },
-                    { value: 'vanilla', label: 'Vanilla' },
-                  ]}
-                  isClearable
-                />
-              )}
-              name="carBrand"
-              control={control}
-            />
-          </section>
+      <Box>{loading ? 'load' : ''}</Box>
 
-          <section>
-            <Typography
-              noWrap
-              component="label"
-              sx={{
-                flexGrow: 1,
-                fontFamily: 'roboto',
-                fontWeight: 500,
-                color: 'inherit',
-              }}
-            >
-              Modelo
-            </Typography>
-            <Controller
-              render={({ field }) => (
-                <Select
-                  {...field}
-                  options={[
-                    { value: 'chocolate', label: 'Chocolate' },
-                    { value: 'strawberry', label: 'Strawberry' },
-                    { value: 'vanilla', label: 'Vanilla' },
-                  ]}
-                  isClearable
-                />
-              )}
-              name="models"
-              control={control}
-            />
-          </section>
-
-          <section>
-            <Typography
-              noWrap
-              component="label"
-              sx={{
-                flexGrow: 1,
-                fontFamily: 'roboto',
-                fontWeight: 500,
-                color: 'inherit',
-              }}
-            >
-              Ano
-            </Typography>
-            <Controller
-              render={({ field }) => (
-                <Select
-                  {...field}
-                  options={[
-                    { value: 'chocolate', label: 'Chocolate' },
-                    { value: 'strawberry', label: 'Strawberry' },
-                    { value: 'vanilla', label: 'Vanilla' },
-                  ]}
-                  isClearable
-                />
-              )}
-              name="age"
-              control={control}
-            />
-          </section>
-        </Stack>
-        <Button
-          sx={{
-            mt: 4,
-          }}
-          variant="contained"
-          type="submit"
+      <Box component="section" mt={2}>
+        <InputLabel id="brand">Marca</InputLabel>
+        <Select
+          id="selectBrand"
+          label="Marca"
+          labelId="brand"
+          onChange={handleChangeBrand}
+          value={brand}
+          sx={{ width: '100%' }}
         >
-          Consultar
-        </Button>
-      </FormControl>
+          {brands?.map((brand) => (
+            <MenuItem key={brand.codigo} value={brand.codigo}>
+              {brand.nome}
+            </MenuItem>
+          ))}
+        </Select>
+      </Box>
+
+      <Box component="section" mt={2}>
+        <InputLabel id="model">Modelo</InputLabel>
+        <Select
+          disabled={lockModel ? true : false}
+          id="selectModel"
+          label="Modelo"
+          labelId="model"
+          onChange={handleChangeModels}
+          value={model}
+          sx={{ width: '100%' }}
+        >
+          {models?.map((model) => (
+            <MenuItem key={model.codigo} value={model.codigo}>
+              {model.nome}
+            </MenuItem>
+          ))}
+        </Select>
+      </Box>
+
+      <Box component="section" mt={2}>
+        <InputLabel id="age">Age</InputLabel>
+        <Select
+          disabled={lockAge ? true : false}
+          id="selectAge"
+          label="Ano"
+          labelId="age"
+          value={age}
+          onChange={handleChangeConsult}
+          sx={{ width: '100%' }}
+        >
+          {ages?.map((age) => (
+            <MenuItem key={age.codigo} value={age.codigo}>
+              {age.nome}
+            </MenuItem>
+          ))}
+        </Select>
+      </Box>
+
+      <Button
+        sx={{
+          mt: 4,
+          py: 2,
+          width: '100%',
+        }}
+        variant="contained"
+        disabled={lockButton ? true : false}
+      >
+        Consultar
+      </Button>
     </Box>
   );
 }

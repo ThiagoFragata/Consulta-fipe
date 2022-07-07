@@ -4,7 +4,7 @@ import { Search } from '~/components/Search';
 
 export default function Home() {
   return (
-    <>
+    <Box minWidth="300px">
       <Navbar />
       <Container
         maxWidth="xl"
@@ -23,7 +23,6 @@ export default function Home() {
         >
           <Typography
             variant="h4"
-            noWrap
             component="h1"
             sx={{
               flexGrow: 1,
@@ -36,9 +35,9 @@ export default function Home() {
           >
             Tabela Fipe
           </Typography>
+
           <Typography
             variant="h5"
-            noWrap
             component="h1"
             sx={{
               mt: '1rem',
@@ -54,6 +53,6 @@ export default function Home() {
         </Box>
         <Search />
       </Container>
-    </>
+    </Box>
   );
 }

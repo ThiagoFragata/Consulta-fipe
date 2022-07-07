@@ -108,8 +108,8 @@ const Navbar = () => {
                     <Typography
                       component="a"
                       sx={{
-                        color: 'white',
                         textDecoration: 'none',
+                        textTransform: 'uppercase',
                       }}
                     >
                       {page.label}
@@ -139,11 +139,11 @@ const Navbar = () => {
           >
             CONSULFIPE
           </Typography>
+
           <Box
             sx={{
               flexGrow: 1,
               display: { xs: 'none', md: 'flex' },
-              justifyContent: 'flex-end',
             }}
           >
             {pages.map((page) => (
