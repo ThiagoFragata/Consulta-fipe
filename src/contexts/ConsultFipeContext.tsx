@@ -36,7 +36,6 @@ export function ConsultFipeProvider({ children }: ConsultProviderProps) {
     api
       .get(`/marcas/${marca}/modelos/${modelo}/anos/${ano}`)
       .then((response) => {
-        console.log(response);
         setDataFipe(response.data);
       });
   }, []);

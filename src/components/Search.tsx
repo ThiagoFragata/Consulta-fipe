@@ -1,13 +1,8 @@
-import {
-  Box,
-  Button,
-  InputLabel,
-  MenuItem,
-  Select,
-  SelectChangeEvent,
-} from '@mui/material';
+import { Box, Button } from '@mui/material';
 import router from 'next/router';
 import { setCookie } from 'nookies';
+
+import Select from 'react-select';
 
 import React, { useEffect, useState } from 'react';
 import { useContext } from 'react';
@@ -17,6 +12,11 @@ import { api } from '~/services/api';
 interface BrandsProps {
   codigo: string;
   nome: string;
+}
+
+interface Props {
+  label: string;
+  value: string;
 }
 
 export function Search() {
@@ -52,11 +52,9 @@ export function Search() {
   }, []);
 
   // listar modelos
-  async function handleChangeBrand(event: SelectChangeEvent) {
-    event.preventDefault();
-
-    setBrand(event.target.value as string);
-    setCookie(undefined, 'marca', event.target.value, {
+  async function handleChangeBrand(brand: Props) {
+    setBrand(brand.value);
+    setCookie(undefined, 'marca', brand.value, {
       maxAge: 60 * 60 * 24, // 24 hour
       path: '/',
     });
@@ -64,10 +62,8 @@ export function Search() {
     setLoading(true);
 
     try {
-      const response = await api.get(`/marcas/${event.target.value}/modelos`);
+      const response = await api.get(`/marcas/${brand.value}/modelos`);
       setModels(response.data.modelos);
-
-      console.log('modelos', models);
 
       setLockModel(false);
     } catch (error) {
@@ -77,11 +73,9 @@ export function Search() {
   }
 
   // listar anos com base no modelo
-  async function handleChangeModels(event: SelectChangeEvent) {
-    event.preventDefault();
-
-    setModel(event.target.value as string);
-    setCookie(undefined, 'modelo', event.target.value, {
+  async function handleChangeModels(model: Props) {
+    setModel(model.value);
+    setCookie(undefined, 'modelo', model.value, {
       maxAge: 60 * 60 * 24, // 24 hour
       path: '/',
     });
@@ -89,11 +83,9 @@ export function Search() {
 
     try {
       const response = await api.get(
-        `/marcas/${brand}/modelos/${event.target.value}/anos`
+        `/marcas/${brand}/modelos/${model.value}/anos`
       );
       setAges(response.data);
-
-      console.log('anos', ages);
 
       setLockAge(false);
     } catch (error) {
@@ -104,11 +96,9 @@ export function Search() {
   }
 
   // consultar fipe
-  async function handleChangeConsult(event: SelectChangeEvent) {
-    event.preventDefault();
-
-    setAge(event.target.value as string);
-    setCookie(undefined, 'ano', event.target.value, {
+  async function handleChangeConsult(age: Props) {
+    setAge(age.value);
+    setCookie(undefined, 'ano', age.value, {
       maxAge: 60 * 60 * 24, // 24 hour
       path: '/',
     });
@@ -116,7 +106,7 @@ export function Search() {
 
     try {
       const response = await api.get(
-        `/marcas/${brand}/modelos/${model}/anos/${event.target.value}`
+        `/marcas/${brand}/modelos/${model}/anos/${age.value}`
       );
 
       setDataFipe(response.data);
@@ -128,6 +118,21 @@ export function Search() {
       setLoading(false);
     }
   }
+
+  const marcas = brands?.map((brand) => ({
+    label: brand.nome,
+    value: brand.codigo,
+  }));
+
+  const modelos = models?.map((model) => ({
+    label: model.nome,
+    value: model.codigo,
+  }));
+
+  const anos = ages?.map((age) => ({
+    label: age.nome,
+    value: age.codigo,
+  }));
 
   return (
     <Box
@@ -141,65 +146,47 @@ export function Search() {
       }}
     >
       <Box component="section" mt={2}>
-        <InputLabel id="brand">Marca</InputLabel>
         <Select
-          id="selectBrand"
-          label="Marca"
-          labelId="brand"
+          autoFocus
+          placeholder="Selecione a marca do veículo"
+          className="basic-single"
+          classNamePrefix="select"
+          name="color"
+          isClearable
+          options={marcas}
           onChange={handleChangeBrand}
-          value={brand}
-          sx={{ width: '100%' }}
-        >
-          {brands?.map((brand) => (
-            <MenuItem key={brand.codigo} value={brand.codigo}>
-              {brand.nome}
-            </MenuItem>
-          ))}
-        </Select>
+        />
       </Box>
 
       <Box component="section" mt={2}>
-        <InputLabel id="model">Modelo</InputLabel>
         <Select
-          disabled={lockModel ? true : false}
-          id="selectModel"
-          label="Modelo"
-          labelId="model"
+          placeholder="Selecione o modelo do veículo"
+          className="basic-single"
+          classNamePrefix="select"
+          name="color"
+          isClearable
+          isDisabled={lockModel ? true : false}
+          options={modelos}
           onChange={handleChangeModels}
-          value={model}
-          sx={{ width: '100%' }}
-        >
-          {models?.map((model) => (
-            <MenuItem key={model.codigo} value={model.codigo}>
-              {model.nome}
-            </MenuItem>
-          ))}
-        </Select>
+        />
       </Box>
 
       <Box component="section" mt={2}>
-        <InputLabel id="age">Age</InputLabel>
         <Select
-          disabled={lockAge ? true : false}
-          id="selectAge"
-          label="Ano"
-          labelId="age"
-          value={age}
+          placeholder="Selecione o ano modelo do veículo"
+          className="basic-single"
+          classNamePrefix="select"
+          name="color"
+          isClearable
+          isDisabled={lockAge ? true : false}
+          options={anos}
           onChange={handleChangeConsult}
-          sx={{ width: '100%' }}
-        >
-          {ages?.map((age) => (
-            <MenuItem key={age.codigo} value={age.codigo}>
-              {age.nome}
-            </MenuItem>
-          ))}
-        </Select>
+        />
       </Box>
 
       <Button
         sx={{
           mt: 4,
-          py: 2,
           width: '100%',
         }}
         variant="contained"
