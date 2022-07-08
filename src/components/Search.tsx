@@ -14,11 +14,6 @@ interface BrandsProps {
   nome: string;
 }
 
-interface Props {
-  label: string;
-  value: string;
-}
-
 export function Search() {
   const [brands, setBrands] = useState<BrandsProps[]>();
   const [models, setModels] = useState<BrandsProps[]>();
@@ -52,7 +47,7 @@ export function Search() {
   }, []);
 
   // listar modelos
-  async function handleChangeBrand(brand: Props) {
+  async function handleChangeBrand(brand: any) {
     setBrand(brand.value);
     setCookie(undefined, 'marca', brand.value, {
       maxAge: 60 * 60 * 24, // 24 hour
@@ -73,7 +68,7 @@ export function Search() {
   }
 
   // listar anos com base no modelo
-  async function handleChangeModels(model: Props) {
+  async function handleChangeModels(model: any) {
     setModel(model.value);
     setCookie(undefined, 'modelo', model.value, {
       maxAge: 60 * 60 * 24, // 24 hour
@@ -96,7 +91,7 @@ export function Search() {
   }
 
   // consultar fipe
-  async function handleChangeConsult(age: Props) {
+  async function handleChangeConsult(age: any) {
     setAge(age.value);
     setCookie(undefined, 'ano', age.value, {
       maxAge: 60 * 60 * 24, // 24 hour
