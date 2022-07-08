@@ -6,8 +6,12 @@ import {
   Select,
   SelectChangeEvent,
 } from '@mui/material';
+import router from 'next/router';
+import { setCookie } from 'nookies';
 
 import React, { useEffect, useState } from 'react';
+import { useContext } from 'react';
+import { ConsultFipeContext } from '~/contexts/ConsultFipeContext';
 import { api } from '~/services/api';
 
 interface BrandsProps {
@@ -15,24 +19,10 @@ interface BrandsProps {
   nome: string;
 }
 
-interface DataFipeProps {
-  AnoModelo: number;
-  CodigoFipe: string;
-  Combustivel: string;
-  Marca: string;
-  MesReferencia: string;
-  Modelo: string;
-  SiglaCombustivel: string;
-  TipoVeiculo: 1;
-  Valor: string;
-}
-
 export function Search() {
   const [brands, setBrands] = useState<BrandsProps[]>();
   const [models, setModels] = useState<BrandsProps[]>();
   const [ages, setAges] = useState<BrandsProps[]>();
-
-  const [dataFipe, setDataFipe] = useState<DataFipeProps>();
 
   const [loading, setLoading] = useState(true);
 
@@ -43,6 +33,8 @@ export function Search() {
   const [brand, setBrand] = useState('');
   const [model, setModel] = useState('');
   const [age, setAge] = useState('');
+
+  const { setDataFipe } = useContext(ConsultFipeContext);
 
   // listar marcas
   useEffect(() => {
@@ -64,6 +56,11 @@ export function Search() {
     event.preventDefault();
 
     setBrand(event.target.value as string);
+    setCookie(undefined, 'marca', event.target.value, {
+      maxAge: 60 * 60 * 24, // 24 hour
+      path: '/',
+    });
+
     setLoading(true);
 
     try {
@@ -84,6 +81,10 @@ export function Search() {
     event.preventDefault();
 
     setModel(event.target.value as string);
+    setCookie(undefined, 'modelo', event.target.value, {
+      maxAge: 60 * 60 * 24, // 24 hour
+      path: '/',
+    });
     setLoading(true);
 
     try {
@@ -107,6 +108,10 @@ export function Search() {
     event.preventDefault();
 
     setAge(event.target.value as string);
+    setCookie(undefined, 'ano', event.target.value, {
+      maxAge: 60 * 60 * 24, // 24 hour
+      path: '/',
+    });
     setLoading(true);
 
     try {
@@ -122,8 +127,6 @@ export function Search() {
     } finally {
       setLoading(false);
     }
-
-    console.log(dataFipe);
   }
 
   return (
@@ -137,8 +140,6 @@ export function Search() {
         minWidth: 300,
       }}
     >
-      <Box>{loading ? 'load' : ''}</Box>
-
       <Box component="section" mt={2}>
         <InputLabel id="brand">Marca</InputLabel>
         <Select
@@ -203,6 +204,7 @@ export function Search() {
         }}
         variant="contained"
         disabled={lockButton ? true : false}
+        onClick={() => router.push('/result')}
       >
         Consultar
       </Button>

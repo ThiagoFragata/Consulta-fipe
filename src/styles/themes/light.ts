@@ -12,7 +12,7 @@ import {
 const light = createTheme({
   palette: {
     primary: {
-      main: indigo.A400,
+      main: '#189B98',
     },
     secondary: {
       main: blueGrey.A400,

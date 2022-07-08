@@ -1,9 +1,26 @@
 import { Box, Container, Typography } from '@mui/material';
 import { green } from '@mui/material/colors';
+import { GetServerSideProps } from 'next';
+import { useContext, useEffect } from 'react';
+
+import { parseCookies } from 'nookies';
 
 import Navbar from '~/components/Navbar';
 
+import { ConsultFipeContext } from '~/contexts/ConsultFipeContext';
+import router from 'next/router';
+
 export default function Result() {
+  const { dataFipe } = useContext(ConsultFipeContext);
+
+  useEffect(() => {
+    const { marca } = parseCookies();
+
+    if (marca === 'undefined') {
+      router.push('/');
+    }
+  }, []);
+
   return (
     <>
       <Navbar />
@@ -26,38 +43,48 @@ export default function Result() {
             alignItems: 'center',
           }}
         >
-          <Typography
-            variant="h5"
-            noWrap
+          <Box
             component="h1"
-            sx={{
-              flexGrow: 1,
-              fontFamily: 'roboto',
-              fontWeight: 700,
-              color: 'inherit',
-              textDecoration: 'none',
-            }}
+            color="black"
+            sx={{ fontSize: '2rem', fontWeight: 700 }}
           >
-            Tabela Fipe: Preço Chevrolet 2019
-          </Typography>
+            Tabela Fipe:
+          </Box>
+
+          <Box
+            component="p"
+            color="black"
+            m={0}
+            sx={{ fontSize: '2rem', fontWeight: 500 }}
+          >
+            {dataFipe?.Marca} {dataFipe?.Modelo}
+          </Box>
+
+          <Box
+            component="p"
+            color="grey.600"
+            m={0}
+            sx={{ fontSize: '1.5rem', fontWeight: 400 }}
+          >
+            Ano modelo: {dataFipe?.AnoModelo}
+          </Box>
 
           <Box
             component="div"
             sx={{
               backgroundColor: green['A400'],
               borderRadius: 16,
-              py: 2,
-              px: 6,
+              px: 4,
               mt: 3,
             }}
           >
-            <Typography
-              sx={{ fontSize: '2rem', fontWeight: 700 }}
+            <Box
+              component="p"
               color="white"
-              gutterBottom
+              sx={{ fontSize: '2rem', fontWeight: 700 }}
             >
-              R$ 9.001,52
-            </Typography>
+              {dataFipe?.Valor}
+            </Box>
           </Box>
           <Typography
             sx={{ fontSize: '1rem', fontWeight: 300, mt: 2 }}
@@ -71,3 +98,20 @@ export default function Result() {
     </>
   );
 }
+
+export const getServerSideProps: GetServerSideProps = async (ctx) => {
+  const { marca } = parseCookies(ctx);
+
+  if (marca === 'undefined') {
+    return {
+      redirect: {
+        destination: '/',
+        permanent: false,
+      },
+    };
+  }
+
+  return {
+    props: {},
+  };
+};
