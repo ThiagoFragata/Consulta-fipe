@@ -4,7 +4,7 @@ import { Search } from '~/components/Search';
 
 export default function Home() {
   return (
-    <Box minWidth="300px">
+    <Box minWidth="375px">
       <Navbar />
       <Container
         maxWidth="xl"

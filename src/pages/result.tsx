@@ -22,7 +22,7 @@ export default function Result() {
   }, []);
 
   return (
-    <>
+    <Box minWidth="375px">
       <Navbar />
       <Container
         maxWidth="xl"
@@ -95,7 +95,7 @@ export default function Result() {
           </Typography>
         </Box>
       </Container>
-    </>
+    </Box>
   );
 }
 
