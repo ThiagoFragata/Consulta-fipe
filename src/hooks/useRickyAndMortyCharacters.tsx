@@ -1,5 +1,5 @@
 import { useQuery } from 'react-query';
-import { api } from '../services/api';
+import { apiEx as api } from '../services/api';
 
 export interface CharacterProps {
   name: string;

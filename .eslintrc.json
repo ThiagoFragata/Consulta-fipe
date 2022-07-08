@@ -3,7 +3,6 @@
   "plugins": [
     "react",
     "react-hooks",
-    "@typescript-eslint",
     "prettier",
     "eslint-plugin-import-helpers",
     "import"

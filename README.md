@@ -1,34 +1,125 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Consulta Fipe
 
-## Getting Started
+Projeto desenvolvido para candidatura em vaga para desenvolvedor front-end,
+o projeto consite em consumir uma api para consultar a tabela fipe de carros.
 
-First, run the development server:
+## Instalação
+
+Primeiro, execute o servidor de desenvolvimento:
 
 ```bash
-npm run dev
-# or
-yarn dev
+    npm run dev
+ou
+    yarn dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Tech Stack
 
-You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
+**Client:** NextJS, ContextAPI, Material UI, react-query, nookies
 
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.ts`.
+**Server:** Axios
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
+## Demo
 
-## Learn More
+Insert gif or link to demo
 
-To learn more about Next.js, take a look at the following resources:
+## Authors
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- [@thiagofragata](https://www.github.com/thiagofragata)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+## Exercícios
 
-## Deploy on Vercel
+Exercício 1
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```javascript
+export function Maskify(str: string, mask = '#', n = 4) {
+  return ('' + str).slice(0, -n).replace(/./g, mask) + ('' + str).slice(-n);
+}
+turn <Component />
+}
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+Exercício 2
+
+```javascript
+export function updateData(currentObject: any, newDataObject: any) {
+  Object.keys(currentObject).forEach((keyCurrentObject) => {
+    Object.keys(newDataObject).forEach((keyNewDataObject) => {
+      if (keyCurrentObject === keyNewDataObject) {
+        currentObject[keyCurrentObject] = newDataObject[keyNewDataObject];
+      }
+    });
+  });
+
+  return currentObject;
+}
+
+const dataUpdate = updateData(
+  { name: 'Rafael', country: 'Chile', age: 42 },
+  { name: 'Camiseta Polo', price: 59.9, amount: 30 }
+);
+console.log(dataUpdate);
+
+}
+```
+
+Exercício 3
+
+```javascript
+import { useQuery } from 'react-query';
+import { apiEx as api } from '../services/api';
+
+export interface CharacterProps {
+  name: string;
+  gender: string;
+  image: string;
+  species: string;
+}
+
+type GetRickyAndMortyCharactersResponse = {
+  totalCount: number;
+  response: CharacterProps[];
+};
+
+export async function getRickyAndMortyCharacters(
+  page: number
+): Promise<GetRickyAndMortyCharactersResponse> {
+  const { data } = await api.get('/character', {
+    params: {
+      page: page,
+    },
+  });
+
+  const totalCount = data.info.count;
+
+  const response = data.results.map((data: CharacterProps) => {
+    return {
+      nome: data.name,
+      genero: data.gender,
+      avatar: data.image,
+      especie: data.species,
+    };
+  });
+
+  return {
+    response,
+    totalCount,
+  };
+}
+
+export function useRickyAndMortyCharacters(page: number) {
+  return useQuery(['data', page], () => getRickyAndMortyCharacters(page), {
+    staleTime: 1000 * 60 * 10, // 10 minutes
+  });
+}
+}
+```
+
+Exercício 4
+
+```javascript
+export function checkIfTheFirstLetterIsUppercase(text: string) {
+  const result = text[0] === text[0].toUpperCase() ? true : false;
+  return result;
+}
+```
